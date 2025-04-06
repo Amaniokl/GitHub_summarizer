@@ -1,0 +1,5 @@
+{
+    "ignore": ["repos/*"],
+    "ext": "js,json"
+  }
+  
