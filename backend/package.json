@@ -19,6 +19,7 @@
     "express": "^5.1.0",
     "glob": "^11.0.1",
     "http": "^0.0.1-security",
+    "ioredis": "^5.6.0",
     "nodemon": "^3.1.9",
     "openai": "^4.92.0",
     "simple-git": "^3.27.0"

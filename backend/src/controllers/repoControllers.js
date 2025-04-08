@@ -1,9 +1,8 @@
-// server/controllers/repoController.js
 import { cloneRepo } from '../services/gitService.js';
-import { buildFileTree } from '../utils/fileTree.js';
 import readFilesRecursively from '../utils/readFile.js';
 import batchFiles from '../utils/batchFile.js';
 import analyzeWithLLM from '../utils/analyzeWithLLM.js';
+import redis from '../utils/redis.js'; // ⬅️ import the cache
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -21,19 +20,25 @@ const cloneRepoHandler = async (req, res) => {
 
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Transfer-Encoding', 'chunked');
-  res.flushHeaders();
-  res.write('{"status":"processing","updates":['); // Start streaming JSON
+  res.flushHeaders(); // Start streaming
 
   try {
-    const localPath = await cloneRepo(repoUrl);
-    res.write(JSON.stringify({ step: 'clone', message: 'Repository cloned successfully' }));
+    // ✅ Check cache
+    const cached = await redis.get(repoUrl);
+    if (cached) {
+      res.write(JSON.stringify({ step: 'cache', message: 'Result served from cache' }) + '\n');
+      res.write(JSON.stringify({ result: JSON.parse(cached) }) + '\n');
+      return res.end();
+    }
 
-    // const dirStructure = await buildFileTree(localPath, 0);
+    // ✅ Process if not cached
+    const localPath = await cloneRepo(repoUrl);
+    res.write(JSON.stringify({ step: 'clone', message: 'Cloning complete' }) + '\n');
 
     const files = await readFilesRecursively(localPath);
-    res.write(',' + JSON.stringify({ step: 'read', message: `${files.length} files processed` }));
+    res.write(JSON.stringify({ step: 'read', message: 'Files read successfully' }) + '\n');
 
-    const batches = batchFiles(files, 8000); // Smaller batches for better parallelism
+    const batches = batchFiles(files, 500);
     const results = [];
 
     const concurrencyLimit = 3;
@@ -44,23 +49,18 @@ const cloneRepoHandler = async (req, res) => {
       );
       results.push(...chunkResults);
 
-      res.write(',' + JSON.stringify({
-        step: 'analyze',
-        progress: `${Math.min(i + concurrencyLimit, batches.length)}/${batches.length} batches done`
-      }));
+      res.write(JSON.stringify({ step: 'analyze', progress: `Batch ${i + 1}/${batches.length}` }) + '\n');
     }
 
-    // Final full result
-    res.write(`],"results":${JSON.stringify({
-      repoPath: localPath,
-      // dirStructure,
-      fileSummaries: results
-    })}}`);
+    // ✅ Cache result for 10 minutes
+    await redis.setex(repoUrl, 1000, JSON.stringify(results)); // TTL = 600 seconds
+
+    res.write(JSON.stringify({ result: results }) + '\n');
     res.end();
 
   } catch (err) {
     console.error(err);
-    res.write(`],"error":"${err.message}"}`);
+    res.write(JSON.stringify({ error: err.message }) + '\n');
     res.end();
   }
 };

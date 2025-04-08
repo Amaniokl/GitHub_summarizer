@@ -24,7 +24,7 @@ const skipFiles = new Set([
   'error.log', 'debug.log', 'output.log'
 ]);
 
-const MAX_FILE_SIZE_KB = 200;
+const MAX_FILE_SIZE_KB = 50;
 
 async function readFilesRecursively(rootDir) {
   const files = [];
@@ -81,7 +81,7 @@ async function readFilesRecursively(rootDir) {
   await walk(rootDir);
 
   files.sort((a, b) => b.score - a.score);
-  return files.slice(0, 25);
+  return files.slice(0, 2);
 }
 
 export default readFilesRecursively;
