@@ -1,12 +1,11 @@
-import { approxTokenCount } from './tokenizer.js';
-
 const batchFiles = (files, maxTokens = 12000) => {
   const batches = [];
   let currentBatch = [];
   let currentTokens = 0;
 
   for (const file of files) {
-    const fileTokens = approxTokenCount(file.content);
+    // Reuse file.tokens if available; fallback to approxTokenCount if not.
+    const fileTokens = typeof file.tokens === 'number' ? file.tokens : approxTokenCount(file.content);
 
     if (currentTokens + fileTokens > maxTokens && currentBatch.length > 0) {
       batches.push(currentBatch);

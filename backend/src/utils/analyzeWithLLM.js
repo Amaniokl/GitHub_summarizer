@@ -1,10 +1,17 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'; // Import Gemini class
-import dotenv from 'dotenv'; // Import dotenv
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import dotenv from 'dotenv';
+
 dotenv.config();
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY); // Initialize with API key
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const analyzeWithLLM = async (batch) => {
-    const prompt = `You are an expert software architect. Analyze the following project files and provide a concise, high-level summary. Organize your response using clear section headings for:
+  // Build prompt content from project files
+  const fileText = batch.map(f => `File: ${f.path}\n${f.content}`).join('\n\n');
+
+  const prompt = `You are an expert software architect. Analyze the following project files and provide a **brief, high-level summary**. Your response must be **very concise** and include only **key architectural insights**, not implementation details.
+
+Organize your answer under the following **headings**, with each containing **2-3 short bullet points** maximum:
 
 - Overall Architecture
 - Main Components/Services
@@ -13,21 +20,18 @@ const analyzeWithLLM = async (batch) => {
 - Notable Patterns or Frameworks
 - Other Technical Observations
 
-Each section should contain 3-5 bullet points. Avoid implementation details, focus on structure, technologies used, and architectural insights.
+Be as **succinct** as possible. Focus on structure, technologies used, and design patterns.
 
-${batch.map(f => `File: ${f.path}\n${f.content}`).join('\n\n')}`;
+${fileText}`;
 
+  // Initialize model
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro-exp-03-25" });
 
+  // Generate response
+  const result = await model.generateContent(prompt);
+  const text = await result.response.text();
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro-exp-03-25" }); // Use Gemini Pro
-//     const models = await genAI.listModels();
-// console.log(models);
-
-    const result = await model.generateContent(prompt); // Generate content
-    const response = await result.response; // Extract response
-    const text = response.text(); // Get plain text
-
-    return text; // Return analysis
+  return text;
 };
 
-export default analyzeWithLLM; // Export the function
+export default analyzeWithLLM;
