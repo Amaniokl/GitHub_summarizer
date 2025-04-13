@@ -4,7 +4,9 @@ import batchFiles from '../utils/batchFile.js';
 import redis from '../utils/redis.js';
 import dotenv from 'dotenv';
 import { buildFileTree } from '../utils/fileTree.js';
-import { summarizeBatch, summarizeBatches } from '../utils/analyzeWithLLM.js';
+import { summarizeBatch, summarizeBatches, generateReadme } from '../utils/analyzeWithLLM.js';
+import fs from 'fs/promises';
+import path from 'path';
 
 dotenv.config();
 
@@ -15,6 +17,7 @@ const isValidGitHubUrl = (url) => {
 
 const cloneRepoHandler = async (req, res) => {
   const { repoUrl } = req.body;
+  let localPath = null;
 
   if (!repoUrl || !isValidGitHubUrl(repoUrl)) {
     return res.status(400).json({ error: 'Invalid GitHub repository URL' });
@@ -32,16 +35,15 @@ const cloneRepoHandler = async (req, res) => {
       return res.end();
     }
 
-    const localPath = await cloneRepo(repoUrl);
+    localPath = await cloneRepo(repoUrl);
     res.write(JSON.stringify({ step: 'clone', message: 'Cloning complete' }) + '\n');
 
     const fileTreePromise = buildFileTree(localPath);
 
     const files = await readFilesRecursively(localPath);
     res.write(JSON.stringify({ step: 'read', message: 'Files read successfully' }) + '\n');
-
+    
     const batches = batchFiles(files, 5000);
-
     const batchSummaries = [];
     const concurrencyLimit = 5;
 
@@ -63,10 +65,13 @@ const cloneRepoHandler = async (req, res) => {
     const { finalSummary } = await summarizeBatches(batches);
     const fileTree = await fileTreePromise;
 
+    res.write(JSON.stringify({ step: 'readme', message: 'Generating README.md' }) + '\n');
+    const readme = await generateReadme(fileTree, finalSummary, batchSummaries);
+
     const finalResult = {
       fileTree,
-      summary: finalSummary
-      // batchSummaries,
+      summary: finalSummary,
+      readme
     };
 
     await redis.setex(repoUrl, 600, JSON.stringify(finalResult));
@@ -78,6 +83,16 @@ const cloneRepoHandler = async (req, res) => {
     console.error(err);
     res.write(JSON.stringify({ error: err.message }) + '\n');
     res.end();
+  } finally {
+    // Clean up cloned repo folder
+    if (localPath) {
+      try {
+        await fs.rm(localPath, { recursive: true, force: true });
+        console.log(`Deleted cloned repo at ${localPath}`);
+      } catch (cleanupErr) {
+        console.error(`Failed to delete ${localPath}:`, cleanupErr.message);
+      }
+    }
   }
 };
 

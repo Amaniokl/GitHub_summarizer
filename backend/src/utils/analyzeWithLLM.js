@@ -117,4 +117,92 @@ const summarizeBatches = async (batches) => {
   };
 };
 
-export { summarizeBatch, summarizeBatches };
+const generateReadme = async (fileTreePromise, finalSummary, batchSummaries) => {
+  const prompt = `
+You are a seasoned open-source contributor and senior software engineer.
+
+Your task is to generate a **well-structured, professional-quality README.md** file in **Markdown** format for a developer-facing project.
+
+This README will be published on GitHub and should **clearly communicate** the purpose, structure, and usage of the project. Make it clean, concise, technically sound, and beginner-friendly.
+
+---
+
+📂 **Project File Tree**:
+\`\`\`
+${fileTreePromise}
+\`\`\`
+
+🧠 **High-Level Architecture Summary**:
+\`\`\`
+${finalSummary}
+\`\`\`
+
+📦 **Component Breakdown (Batch Summaries)**:
+\`\`\`
+${batchSummaries.join('\n\n')}
+\`\`\`
+
+---
+
+✅ **README Generation Guidelines**:
+
+Use proper Markdown formatting and include the following sections:
+
+1. **# Project Title**
+   - A concise, relevant name.
+
+2. **## Description**
+   - What this project does.
+   - Who it's for.
+   - Key use-cases and features.
+
+3. **## Technologies Used**
+   - List major technologies/libraries/frameworks.
+
+4. **## File Structure**
+   - Briefly describe the file structure using the file tree above.
+   - Highlight important directories/components.
+
+5. **## Architecture Overview**
+   - Use the high-level and batch summaries to describe the internal design.
+   - Mention modules, flows, APIs, or system interactions as relevant.
+
+6. **## Installation**
+   - Prerequisites (Node, Docker, etc.)
+   - Setup instructions (clone, install dependencies, env setup)
+
+7. **## Usage**
+   - How to run the project.
+   - Example commands or API usage.
+
+8. **## Contributing**
+   - Guidelines or links to a \`CONTRIBUTING.md\` file.
+
+9. **## License**
+   - Name the license (e.g., MIT) and optionally provide a link.
+
+10. **(Optional) ## FAQ or Troubleshooting**
+    - Answer common developer questions if applicable.
+
+---
+
+💡 **Tone and Style Guidelines**:
+- Developer-friendly
+- Informative but approachable
+- Include **code blocks**, **lists**, and **badges** where useful
+- Prioritize clarity over verbosity
+- Assume the reader has some technical background but is new to this repo
+
+Now, generate a complete and polished \`README.md\`:
+`;
+
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite-001" });
+  const result = await model.generateContent(prompt);
+  const readme = await result.response.text();
+
+  return readme;
+};
+
+
+
+export { summarizeBatch, summarizeBatches, generateReadme };
