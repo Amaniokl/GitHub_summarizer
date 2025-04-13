@@ -10,7 +10,7 @@ const isIgnored = (name) => {
   return IGNORED_NAMES.has(name) || name.endsWith('.test.js') || name.endsWith('.spec.js');
 };
 
-const buildFileTree = (dir, depth = 0, maxDepth = 2) => {
+const buildFileTree = (dir, depth = 0, maxDepth=7) => {
   const result = [];
 
   const items = fs.readdirSync(dir);
