@@ -1,4 +1,4 @@
-const batchFiles = (files, maxTokens = 12000) => {
+const batchFiles = (files, maxTokens) => {
   const batches = [];
   let currentBatch = [];
   let currentTokens = 0;

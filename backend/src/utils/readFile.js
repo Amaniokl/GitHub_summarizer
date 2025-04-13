@@ -26,20 +26,71 @@ const config = {
     /.*\.config\.js$/, // e.g. any file ending with ".config.js"
   ],
   skipFiles: [
-    'package-lock.json', 'yarn.lock', 'pnpm-lock.yaml',
-    '.DS_Store', 'Thumbs.db', '.env.local', '.env.production',
-    'error.log', 'debug.log', 'output.log',
-    // Regex examples:
-    /^.*\.min\.(js|css)$/ // Skip minified files
-  ],
+    // Dependency lock files
+    'package-lock.json',
+    'yarn.lock',
+    'pnpm-lock.yaml',
+
+    // Environment configuration files
+    '.env',
+    '.env.local',
+    '.env.development',
+    '.env.production',
+    '.env.test',
+
+    // Logs & temporary output
+    'error.log',
+    'debug.log',
+    'output.log',
+    /^.*\.log$/,           // Any log file
+    /^.*\.tmp$/,           // Temporary files
+    /^.*\.cache$/,         // Cache files
+    /^.*~$/,               // Editor backups
+
+    // Minified assets & source maps
+    /^.*\.min\.(js|css)$/, // Minified JS/CSS
+    /^.*\.map$/,           // Source maps
+
+    // Media files (images, audio, video)
+    /^.*\.(png|jpg|jpeg|gif|webp|svg|bmp|ico)$/,   // Images
+    /^.*\.(mp3|wav|ogg|flac|aac)$/,               // Audio
+    /^.*\.(mp4|webm|avi|mov|mkv)$/,               // Video
+
+    // Fonts & vector files
+    /^.*\.(woff|woff2|ttf|otf|eot|ttc)$/,
+    /^.*\.(pdf|ai|eps|sketch|psd|xd)$/,
+
+    // Documents & samples (excluding README)
+    /^.*\.(doc|docx|ppt|pptx|xls|xlsx|csv)$/,     // Office docs
+    /^((?!README).)*\.(md|markdown|rst|txt)$/,    // Text/docs but not README.md etc.
+    /^sample.*$/,                                 // Sample files
+    /^demo.*$/,
+    /^test-data.*$/,
+    /^.*\.example$/,                              // Config examples
+
+    // Editor/system junk files
+    '.DS_Store',  // macOS
+    'Thumbs.db',  // Windows
+    '*.swp',      // Vim swap files
+    '*.swo',
+    '*.bak',      // Backups
+    '*.iml',
+
+    // Generic hidden dotfiles (excluding ones explicitly needed)
+    /^\.(?!README).*$/,  // Any other hidden dotfiles
+
+    // .gitignore and similar files
+    '.gitignore'         // Git ignore files
+  ]
+  ,
   skipDirs: [
     'node_modules', '.git', 'dist', 'build', 'coverage',
     // Regex example for directories starting with a dot (hidden directories)
-    /^\./ 
+    /^\./
   ],
 };
 
-const MAX_FILE_SIZE = 50 * 1024; // bytes
+const MAX_FILE_SIZE = 200 * 1024; // bytes
 
 // Helper that checks if a string value matches any of the provided rules (string or RegExp)
 const matchesAnyRule = (value, rules) => {
@@ -131,7 +182,7 @@ class MinHeap {
       if (rightIndex < length && this.heap[rightIndex].score < this.heap[leftIndex].score) {
         smallerIndex = rightIndex;
       }
-      
+
       if (this.heap[index].score <= this.heap[smallerIndex].score) break;
       this.swap(index, smallerIndex);
       index = smallerIndex;
@@ -152,7 +203,7 @@ class MinHeap {
 }
 
 // Set the number of top-priority files you wish to keep.
-const TOP_FILES_CAPACITY = 12;
+const TOP_FILES_CAPACITY = 60;
 
 const readFilesRecursively = async (rootDir) => {
   const topFilesHeap = new MinHeap();
@@ -199,7 +250,7 @@ const readFilesRecursively = async (rootDir) => {
           try {
             const stat = await fs.stat(fullPath);
             if (stat.size > MAX_FILE_SIZE) return;
-            
+
             const content = await fs.readFile(fullPath, 'utf8');
             const tokens = approxTokenCount(content);
             // Calculate a score: bonus for priority files, penalized by depth and adjusted by token count.
