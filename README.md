@@ -95,7 +95,7 @@ This project adopts a microservices-oriented architecture, with the frontend and
 3.  **Environment Setup:**
 
     *   Create a `.env` file in the backend directory to configure your environment variables.
-    *   You will likely need to set up API keys for LLM interaction (e.g., Google's Gemini).
+    *   You will likely need to set up API keys for LLM interaction (Google's Gemini).
         ```
         # Backend .env file
         LLM_API_KEY=<your_llm_api_key>
