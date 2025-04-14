@@ -43,9 +43,9 @@ const cloneRepoHandler = async (req, res) => {
     const files = await readFilesRecursively(localPath);
     res.write(JSON.stringify({ step: 'read', message: 'Files read successfully' }) + '\n');
     
-    const batches = batchFiles(files, 5000);
+    const batches = batchFiles(files, 8000);
     const batchSummaries = [];
-    const concurrencyLimit = 5;
+    const concurrencyLimit = 10;
 
     for (let i = 0; i < batches.length; i += concurrencyLimit) {
       const chunk = batches.slice(i, i + concurrencyLimit);
@@ -84,7 +84,7 @@ const cloneRepoHandler = async (req, res) => {
     res.write(JSON.stringify({ error: err.message }) + '\n');
     res.end();
   } finally {
-    // Clean up cloned repo folder
+    // Clean up cloned repo folder if it exists
     if (localPath) {
       try {
         await fs.rm(localPath, { recursive: true, force: true });
@@ -94,6 +94,7 @@ const cloneRepoHandler = async (req, res) => {
       }
     }
   }
+
 };
 
 export { cloneRepoHandler };
