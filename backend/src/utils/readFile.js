@@ -90,7 +90,7 @@ const config = {
   ],
 };
 
-const MAX_FILE_SIZE = 500 * 1024; // bytes
+const MAX_FILE_SIZE = 50 * 1024; // bytes
 
 // Helper that checks if a string value matches any of the provided rules (string or RegExp)
 const matchesAnyRule = (value, rules) => {
@@ -203,7 +203,7 @@ class MinHeap {
 }
 
 // Set the number of top-priority files you wish to keep.
-const TOP_FILES_CAPACITY = 80;
+const TOP_FILES_CAPACITY = 20;
 
 const readFilesRecursively = async (rootDir) => {
   const topFilesHeap = new MinHeap();
