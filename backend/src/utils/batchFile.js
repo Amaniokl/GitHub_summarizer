@@ -1,3 +1,4 @@
+import { approxTokenCount } from './tokenizer.js';
 const batchFiles = (files, maxTokens) => {
   const batches = [];
   let currentBatch = [];
