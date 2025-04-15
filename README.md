@@ -30,70 +30,74 @@ The project is structured as a microservices-oriented application with a clear s
 *   **`backend/`**: Implements the Express.js API for handling repository cloning, analysis, LLM interaction, and data processing.  Responsible for interacting with the Git repository and processing files.
 *   **`data-processing/`**: Components for file tree generation, language detection, and utilities for tokenization and batch processing.
 
-GitHub_summarizer/
-├── backend/
-│   ├── nodemon.json               # Development configuration for the backend
-│   ├── package.json               # Backend project metadata and dependencies
-│   ├── src/                       # Source code for backend
-│   │   ├── bin/                   # Contains utilities for backend
-│   │   │   └── fileTree.cpp       # C++ file tree generation utility
-│   │   ├── controllers/           # Controllers to handle repository-related logic
-│   │   │   └── repoControllers.js
-│   │   ├── detectors/             # Detects languages and frameworks in repositories
-│   │   │   └── languageFrameworkDetector.js
-│   │   ├── routes/                # API routes for backend functionality
-│   │   │   └── repoRoutes.js
-│   │   ├── services/              # Services for interacting with external APIs
-│   │   │   └── gitService.js      # GitHub service for repo interaction
-│   │   ├── utils/                 # Utility functions for backend logic
-│   │   │   ├── analyzeWithLLM.js
-│   │   │   ├── batchFile.js
-│   │   │   ├── fileTree.js
-│   │   │   ├── readFile.js
-│   │   │   ├── redis.js
-│   │   │   └── tokenizer.js
-│   │   └── index.js               # Main backend entry point
-├── frontend/
-│   ├── components.json            # List of components for the frontend
-│   ├── eslint.config.js           # ESLint configuration for frontend
-│   ├── index.html                 # Main HTML file
-│   ├── jsconfig.json              # JavaScript configuration for frontend
-│   ├── package.json               # Frontend project metadata and dependencies
-│   ├── vite.config.js             # Vite configuration for bundling
-│   ├── src/                       # Source code for frontend
-│   │   ├── assets/                # Static assets for the frontend
-│   │   │   └── react.svg
-│   │   ├── components/            # UI components for frontend
-│   │   │   └── ui/                # UI-specific components
-│   │   │   │   ├── alert.jsx
-│   │   │   │   ├── avatar.jsx
-│   │   │   │   ├── badge.jsx
-│   │   │   │   ├── button.jsx
-│   │   │   │   ├── card.jsx
-│   │   │   │   ├── collapsible.jsx
-│   │   │   │   ├── dialog.jsx
-│   │   │   │   ├── form.jsx
-│   │   │   │   ├── input.jsx
-│   │   │   │   ├── label.jsx
-│   │   │   │   ├── progress.jsx
-│   │   │   │   ├── scroll-area.jsx
-│   │   │   │   ├── separator.jsx
-│   │   │   │   ├── skeleton.jsx
-│   │   │   │   ├── tabs.jsx
-│   │   │   │   └── tooltip.jsx
-│   │   ├── contexts/              # Contexts for managing global state
-│   │   │   └── ThemeContext.jsx
-│   │   ├── lib/                   # Helper libraries
-│   │   │   └── utils.js
-│   │   ├── pages/                 # Pages for routing
-│   │   │   └── Homepage.jsx
-│   │   ├── utils/                 # Utility functions for frontend logic
-│   │   │   └── repoUtils.js
-│   │   ├── App.css                # Global styles for the app
-│   │   ├── App.jsx                # Main app component
-│   │   ├── index.css              # Additional global styles
-│   │   └── main.jsx               # Main entry point for the frontend
-├── README.md                      # Project documentation
+## Backend
+- `backend/`
+  - `nodemon.json`               # Development configuration for the backend
+  - `package.json`               # Backend project metadata and dependencies
+  - `src/`                       # Source code for backend
+    - `bin/`                     # Contains utilities for backend
+      - `fileTree.cpp`           # C++ file tree generation utility
+    - `controllers/`             # Controllers to handle repository-related logic
+      - `repoControllers.js`
+    - `detectors/`               # Detects languages and frameworks in repositories
+      - `languageFrameworkDetector.js`
+    - `routes/`                  # API routes for backend functionality
+      - `repoRoutes.js`
+    - `services/`                # Services for interacting with external APIs
+      - `gitService.js`          # GitHub service for repo interaction
+    - `utils/`                   # Utility functions for backend logic
+      - `analyzeWithLLM.js`
+      - `batchFile.js`
+      - `fileTree.js`
+      - `readFile.js`
+      - `redis.js`
+      - `tokenizer.js`
+    - `index.js`                 # Main backend entry point
+
+## Frontend
+- `frontend/`
+  - `components.json`            # List of components for the frontend
+  - `eslint.config.js`           # ESLint configuration for frontend
+  - `index.html`                 # Main HTML file
+  - `jsconfig.json`              # JavaScript configuration for frontend
+  - `package.json`               # Frontend project metadata and dependencies
+  - `vite.config.js`             # Vite configuration for bundling
+  - `src/`                       # Source code for frontend
+    - `assets/`                  # Static assets for frontend
+      - `react.svg`
+    - `components/`              # UI components for frontend
+      - `ui/`                    # UI-specific components
+        - `alert.jsx`
+        - `avatar.jsx`
+        - `badge.jsx`
+        - `button.jsx`
+        - `card.jsx`
+        - `collapsible.jsx`
+        - `dialog.jsx`
+        - `form.jsx`
+        - `input.jsx`
+        - `label.jsx`
+        - `progress.jsx`
+        - `scroll-area.jsx`
+        - `separator.jsx`
+        - `skeleton.jsx`
+        - `tabs.jsx`
+        - `tooltip.jsx`
+    - `contexts/`                # Contexts for managing global state
+      - `ThemeContext.jsx`
+    - `lib/`                     # Helper libraries
+      - `utils.js`
+    - `pages/`                   # Pages for routing
+      - `Homepage.jsx`
+    - `utils/`                   # Utility functions for frontend logic
+      - `repoUtils.js`
+    - `App.css`                  # Global styles for the app
+    - `App.jsx`                  # Main app component
+    - `index.css`                # Additional global styles
+    - `main.jsx`                 # Main entry point for the frontend
+
+## Root Directory
+- `README.md`                   # Project documentation
 
 ## Architecture Overview
 
