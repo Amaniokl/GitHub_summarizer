@@ -196,7 +196,7 @@ Use proper Markdown formatting and include the following sections:
 Now, generate a complete and polished \`README.md\`:
 `;
 
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite-001" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
   const result = await model.generateContent(prompt);
   const readme = await result.response.text();
 
