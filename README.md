@@ -1,8 +1,8 @@
-# Code Insights: GitHub Repository Analyzer
+# Code Insights: GitHub Repository Analyzer 
 
-## Description
+## Description (This Readme is also generated using this project)
 
-Code Insights is a web application designed for analyzing GitHub repositories. It allows developers to explore a repository's structure, understand its code files, and generate insightful reports.  The application leverages a backend API for cloning, analyzing, and summarizing repository data, providing a user-friendly interface to understand and navigate complex codebases. Key features include:
+GitYolo is a web application designed for analyzing GitHub repositories. It allows developers to explore a repository's structure, understand its code files, and generate insightful reports.  The application leverages a backend API for cloning, analyzing, and summarizing repository data, providing a user-friendly interface to understand and navigate complex codebases. Key features include:
 
 *   **Repository Cloning and Analysis:** Effortlessly clone and analyze any public GitHub repository.
 *   **File Tree Visualization:**  Interactive file tree view for easy navigation of the repository's structure.
